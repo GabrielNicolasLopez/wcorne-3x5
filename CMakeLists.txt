@@ -1,0 +1,8 @@
+zephyr_library_named(corne3x5)
+zephyr_library_include_directories(${APPLICATION_SOURCE_DIR}/include)
+if(CONFIG_SHIELD_CORNE_LEFT OR CONFIG_SHIELD_CORNE_RIGHT)
+  zephyr_library_sources(src/active_time.c src/active_time_ble.c)
+endif()
+if(CONFIG_SHIELD_CORNE_LEFT AND CONFIG_ZMK_DISPLAY_STATUS_SCREEN_CUSTOM)
+  zephyr_library_sources(src/status_screen.c)
+endif()

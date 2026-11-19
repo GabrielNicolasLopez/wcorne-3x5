@@ -1,0 +1,134 @@
+#include <behaviors.dtsi>
+#include <dt-bindings/zmk/bt.h>
+#include <dt-bindings/zmk/ext_power.h>
+#include <dt-bindings/zmk/keys.h>
+#include "keys_es_latin_american.h"
+
+#define BASE_TD     0
+#define BASE_NORMAL 1
+#define LOWER       2
+#define RAISE       3
+#define EXTRA       4
+
+/ {
+    chosen {
+        zmk,physical-layout = &foostan_corne_5col_layout;
+    };
+
+    combos {
+        compatible = "zmk,combos";
+
+        er_less {
+            bindings = <&kp ES_LT>;
+            key-positions = <2 3>;
+        };
+
+        rt_greater {
+            bindings = <&kp ES_GT>;
+            key-positions = <3 4>;
+        };
+
+        yu_plus {
+            bindings = <&kp ES_PLUS>;
+            key-positions = <5 6>;
+        };
+
+        hj_minus {
+            bindings = <&kp ES_MINUS>;
+            key-positions = <15 16>;
+        };
+
+        nm_asterisk {
+            bindings = <&kp ES_ASTERISK>;
+            key-positions = <25 26>;
+        };
+
+        space_enter_base {
+            timeout-ms = <100>;
+            key-positions = <32 33>;
+            layers = <BASE_TD BASE_NORMAL>;
+            bindings = <&base_hold BASE_NORMAL 0>;
+        };
+    };
+
+    behaviors {
+        td_lshft_caps: td_lshft_caps {
+            compatible = "zmk,behavior-tap-dance";
+            label = "TD_LSHFT_CAPS";
+            #binding-cells = <0>;
+            tapping-term-ms = <200>;
+            bindings = <&kp LSHFT>, <&kp CAPS>;
+        };
+
+        base_hold: base_hold {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "tap-preferred";
+            tapping-term-ms = <2000>;
+            bindings = <&tog>, <&none>;
+        };
+    };
+
+    keymap {
+        compatible = "zmk,keymap";
+
+        // 0: Base con tap-dance en Shift.
+        default_layer {
+            bindings = <
+    &kp Q  &kp W  &kp E  &kp R  &kp T  &kp Y  &kp U  &kp I  &kp O  &kp P
+    &kp A  &kp S  &kp D  &kp F  &kp G  &kp H  &kp J  &kp K  &kp L  &kp ES_N_TILDE
+    &kp Z  &kp X  &kp C  &kp V  &kp B  &kp N  &kp M  &kp COMMA  &kp DOT  &kp ES_MINUS
+                   &kp LALT  &mo RAISE  &kp SPACE        &kp RET  &mo LOWER  &kp INSERT
+            >;
+        };
+
+        // 1: Base con Shift normal.
+        normal_base_layer {
+            bindings = <
+    &kp Q  &kp W  &kp E  &kp R  &kp T  &kp Y  &kp U  &kp I  &kp O  &kp P
+    &kp A  &kp S  &kp D  &kp F  &kp G  &kp H  &kp J  &kp K  &kp L  &kp ES_N_TILDE
+    &kp Z  &kp X  &kp C  &kp V  &kp B  &kp N  &kp M  &kp COMMA  &kp DOT  &kp ES_MINUS
+              &kp LALT  &mo RAISE  &kp SPACE        &kp RET  &mo LOWER  &kp INSERT
+            >;
+        };
+
+        // 2: Lower. Shift hereda el comportamiento de la base activa.
+        lower_layer {
+            bindings = <
+    &kp ES_AT  &none  &none  &none  &none  &kp N7  &kp N8  &kp N9  &kp ES_PLUS  &kp ES_MINUS
+    &none  &none  &none  &kp ES_LPAR  &kp ES_RPAR  &kp N4  &kp N5  &kp N6  &kp N0  &kp UP_ARROW
+    &trans  &trans  &trans  &kp ES_QUESTION  &kp ES_EXCL  &kp N1  &kp N2  &kp N3  &kp LEFT_ARROW  &kp DOWN_ARROW
+                              &kp LGUI  &trans  &kp SPACE           &kp RET  &trans  &kp RALT
+            >;
+        };
+
+        // 3: Raise.
+        raise_layer {
+            bindings = <
+    &kp C_PREVIOUS  &kp C_NEXT  &kp C_MUTE  &kp C_VOLUME_DOWN  &kp C_VOLUME_UP  &kp KP_NUMBER_7  &kp KP_NUMBER_8  &kp KP_NUMBER_9  &kp ES_PLUS  &kp ES_MINUS
+    &bt BT_PRV  &bt BT_NXT  &bt BT_CLR  &kp ES_LPAR  &kp ES_RPAR  &kp KP_NUMBER_4  &kp KP_NUMBER_5  &kp KP_NUMBER_6  &kp HOME  &kp UP_ARROW
+    &trans  &trans  &trans  &kp ES_QUESTION  &kp ES_EXCL  &kp KP_NUMBER_1  &kp KP_NUMBER_2  &kp KP_NUMBER_3  &kp LEFT_ARROW  &kp DOWN_ARROW
+                                                &kp LGUI  &trans  &kp SPACE                &kp RET  &trans  &kp RALT
+            >;
+        };
+
+        // 4: Extra, activa al mantener Lower + Raise.
+        extra_layer {
+            bindings = <
+    &trans  &trans  &trans  &trans  &trans  &kp ES_EQUAL  &kp LS(SQT)  &kp ES_PIPE  &trans  &trans
+    &trans  &trans  &trans  &trans  &trans  &kp ES_DQT  &kp ES_SQT  &kp ES_BACKSLASH  &trans  &trans
+    &trans  &trans  &trans  &trans  &trans  &ext_power EP_ON  &ext_power EP_OFF  &trans  &trans  &trans
+                               &trans  &trans  &kp SPACE    &kp ENTER  &trans  &kp RIGHT_ALT
+            >;
+        };
+    };
+
+    conditional_layers {
+        compatible = "zmk,conditional-layers";
+
+        extra_layer {
+            if-layers = <LOWER RAISE>;
+            then-layer = <EXTRA>;
+        };
+    };
+};
